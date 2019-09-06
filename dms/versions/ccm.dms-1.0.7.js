@@ -50,7 +50,8 @@
                   "inner": {
                     "tag": "span",
                     "onclick": "%all_components%",
-                    "inner": "Digital Makerspace"
+                    "inner": "Digital Makerspace",
+                    "entry-point": 1
                   }
                 },
                 {
@@ -60,27 +61,39 @@
                       "id": "button-browse_apps",
                       "class": "button",
                       "inner": "Browse Apps",
-                      "onclick": "%browse_apps%"
+                      "onclick": "%browse_apps%",
+                      "title": "Browse Apps",
+                      "component": "browseAppsComponent"
                     },
                     {
                       "id": "button-publish_app",
                       "class": "button",
                       "inner": "Publish App",
-                      "onclick": "%publish_app%"
+                      "onclick": "%publish_app%",
+                      "title": "Publish App",
+                      "component": "publishAppComponent"
                     },
                     {
                       "id": "button-all_components",
                       "class": "button",
                       "inner": "All Components",
-                      "onclick": "%all_components%"
+                      "onclick": "%all_components%",
+                      "title": "All Components",
+                      "component": "allComponent"
                     },
                     {
                       "id": "button-publish",
                       "class": "button",
                       "inner": "Publish Component",
-                      "onclick": "%publish%"
+                      "onclick": "%publish%",
+                      "title": "Publish Component",
+                      "component": "publishComponent"
                     },
-                    { "id": "user" }
+                    { "id": "user",
+                      "onclick": "%user_login%",
+                      "title": "User Login",
+                      "component": "userLoginComponent"
+                    }
                   ]
                 }
               ]
@@ -124,6 +137,25 @@
         "https://ccmjs.github.io/akless-components/dms/v1.0.7/default.css"
       ],
       "data": [],
+      "entryPointSite": [
+        "/digital-maker-space/"
+      ],
+      "entryPointDetail": [
+        "component/"
+      ],
+      "routes": [
+        { path: 'browse-apps', component: 'browseAppsComponent'},
+        { path: 'publish-apps', component: 'publishAppComponent'},
+        { path: '', component: 'allComponent'},
+        { path: 'publish-component', component: 'publishComponent'},
+        { path: 'userlogin', component: 'userLoginComponent'},
+        { path: 'details', defaultTab: true, menuEntry: 0, component: 'detailTabComponent'},
+        { path: 'description', menuEntry: 1, component: 'detailTabComponent'},
+        { path: 'rating', menuEntry: 2,  component: 'detailTabComponent'},
+        { path: 'discussion', menuEntry: 3, component: 'detailTabComponent'},
+        { path: 'demo', menuEntry: 4, component: 'detailTabComponent'},
+        { path: 'createapp', menuEntry: 5, component: 'detailTabComponent'}
+      ],
       "listing": [ "ccm.component", "https://ccmjs.github.io/akless-components/listing/versions/ccm.listing-2.0.3.js", {
         "root": "name",
         "html.entry": {
@@ -508,9 +540,10 @@
           "https://ccmjs.github.io/akless-components/dms/resources/submit.css"
         ],
       } ],
-      "component_manager": [ "ccm.component", "https://ccmjs.github.io/akless-components/component_manager/versions/ccm.component_manager-2.2.6.js", [ "ccm.get", "https://ccmjs.github.io/akless-components/component_manager/resources/configs.js", "demo" ] ],
+      "component_manager": [ "ccm.component", "https://ccm.ddev.local/akless-components/component_manager/versions/ccm.component_manager-2.2.6.js", [ "ccm.get", "https://ccmjs.github.io/akless-components/component_manager/resources/configs.js", "demo" ] ],
       "resource_finder": [ "ccm.component", "https://ccmjs.github.io/leck-components/resource_finder/dist/ccm.resource_finder-1.0.0.js" ],
-      "resource_publish": [ "ccm.component", "https://ccmjs.github.io/leck-components/resource_publish/dist/ccm.resource_publish-1.0.0.js" ]
+      "resource_publish": [ "ccm.component", "https://ccmjs.github.io/leck-components/resource_publish/dist/ccm.resource_publish-1.0.0.js" ],
+      //"routing": [ "ccm.component", "https://ccm.ddev.local/dbanduch-components/routing/versions/ccm.routing-1.0.0.js" ],
 //    "user": [ "ccm.instance", "https://ccmjs.github.io/akless-components/user/versions/ccm.user-8.3.1.js", [ "ccm.get", "https://ccmjs.github.io/akless-components/user/resources/configs.js", "guest" ] ],
 //    "logger": [ "ccm.instance", "https://ccmjs.github.io/akless-components/log/versions/ccm.log-4.0.2.js", [ "ccm.get", "https://ccmjs.github.io/akless-components/log/resources/configs.js", "greedy" ] ]
     },
@@ -547,22 +580,46 @@
         // logging of 'start' event
         this.logger && this.logger.log( 'start' );
 
+        // Uppercase the first letter of a string
+        const capitalize = (s) => {
+          if (typeof s !== 'string') return ''
+          return s.charAt(0).toUpperCase() + s.slice(1)
+        };
+
+        //self.routing.start();
+        let url = window.location.pathname;
+
+        let state = getStateFromUrl(url);
+
         $.setContent( this.element, $.html( this.html.main, {
           browse_apps: function () {
-            changeSelectedMenuEntry( this );
-            window.location.hash = `dms-navigation=browseapps`;
+            getRouteByComponent(this.getAttribute('component'));
           },
           publish_app: function () {
-            changeSelectedMenuEntry( this );
-            window.location.hash = `dms-navigation=publishapp`;
+            getRouteByComponent(this.getAttribute('component'));
           },
           all_components: function () {
-            changeSelectedMenuEntry( this );
-            window.location.hash = `dms-navigation=allcomponents`;
+            if (this.getAttribute('entry-point')) {
+              state = getStateFromUrl(self.entryPointSite.toString());
+              navigateTo(state);
+            } else {
+              getRouteByComponent(this.getAttribute('component'));
+            }
           },
           publish: function () {
-            changeSelectedMenuEntry( this );
-            window.location.hash = `dms-navigation=publishcomponent`;
+            getRouteByComponent(this.getAttribute('component'));
+          },
+          user_login: function () {
+            let shadowDms = document.querySelector('#' + self.index).shadowRoot;
+            const shadowUser = shadowDms.querySelector('#' + self.user.index).shadowRoot;
+            const login = shadowUser.querySelector('#logged_out');
+
+            if (login) {
+              state = getStateFromUrl(self.entryPointSite.toString());
+              navigateTo(state);
+            } else {
+              getRouteByComponent(this.getAttribute('component'));
+            }
           }
         } ) );
 
@@ -574,66 +631,167 @@
 
         if ( this.user ) { await this.user.start(); $.setContent( this.element.querySelector( '#user' ), this.user.root ); }
 
-        window.addEventListener('hashchange', function() {
-          const urlHash = window.location.hash.substr(1);
-          const hashParameters = urlHash.split('&');
-          hashParameters.forEach(parameter => {
-            const key = parameter.split('=')[0];
-            const value = parameter.split('=')[1];
-            switch (key) {
-              case 'dms-navigation':
-                navigateTo(value);
-                break;
-              default:
-              //console.log(`Unknown URL parameter: ${key}`);
-            }
-          });
-        });
+        window.onpopstate = function(event) {
+          navigateTo(event.state, true);
+        };
 
-        let urlHash = window.location.hash.substr(1);
-        if (urlHash !== '') {
-          const hashParameters = urlHash.split('&');
-          hashParameters.forEach(parameter => {
-            const key = parameter.split('=')[0];
-            const value = parameter.split('=')[1];
-            switch (key) {
-              case 'dms-navigation':
-                navigateTo(value);
-                break;
-              default:
-              //console.log(`Unknown URL parameter: ${key}`);
-            }
-          });
-        } else {
-          window.location.hash = `dms-navigation=allcomponents`;
+        await navigateTo(state);
+
+        /**
+         *
+         * @param url
+         * @returns {{path: string, component: string}}
+         */
+        function getStateFromUrl(url) {
+          let urlArray = url.split('/');
+          let path = url, componentDetail = false;
+
+          if (urlArray.length === 3) {
+            path = urlArray[2];
+          }
+          if (urlArray.length === 4 && urlArray[2] === self.entryPointDetail.toString().slice(0, -1)) {
+            path = { path: self.entryPointDetail + urlArray[3], component: urlArray[3], isDetail: true };
+            componentDetail = true
+          }
+          if (urlArray.length === 5 && urlArray[2] === self.entryPointDetail.toString().slice(0, -1)) {
+            path = { path: self.entryPointDetail + urlArray[3] + '/' + urlArray[4], component: urlArray[3], isDetail: true, tab: urlArray[4] };
+            componentDetail = true
+          }
+
+          return getRouteByPath(path, componentDetail);
         }
 
-        function navigateTo(target) {
-          window.location.hash = `dms-navigation=${target}`;
-          switch (target) {
-            case 'browseapps':
-              changeSelectedMenuEntry( self.element.querySelector('#button-browse_apps') );
-              renderBrowseApps();
+        /**
+         *
+         * @param path
+         * @param componentDetail
+         * @returns {{path: string, component: string}}
+         */
+        function getRouteByPath(path, componentDetail) {
+          let route = { path: '', component: '' };
+
+          self.routes.forEach(function(element) {
+            if (path === element.path) {
+              route = element;
+            }
+          });
+          if(componentDetail) {
+            route = path;
+          }
+
+          return route;
+        }
+
+        /**
+         *
+         * @param component
+         */
+        function getRouteByComponent(component) {
+          let route = { path: '', component: '' };
+
+          self.routes.forEach(function(element) {
+            if (component === element.component) {
+              route = element;
+            }
+          });
+
+          navigateTo(route);
+        }
+
+        /**
+         *
+         * @param {object} state
+         * @param {boolean} onpopstate
+         * @returns {Promise<void>}
+         */
+        async function navigateTo(state, onpopstate = false) {
+          let elementRef, title, url;
+
+          switch (state.component) {
+            case 'browseAppsComponent':
+              elementRef = self.element.querySelector('#button-browse_apps');
+              title = elementRef.getAttribute('title');
+              url = self.entryPointSite + state.path;
+              renderBrowseAppsComponent();
               break;
-            case 'publishapp':
-              changeSelectedMenuEntry( self.element.querySelector('#button-publish_app') );
-              renderPublishApp();
+            case 'publishAppComponent':
+              elementRef = self.element.querySelector('#button-publish_app');
+              title = elementRef.getAttribute('title');
+              url = self.entryPointSite + state.path;
+              renderPublishAppComponent();
               break;
-            case 'allcomponents':
-              changeSelectedMenuEntry( self.element.querySelector('#button-all_components') );
+            case 'allComponent':
+              elementRef = self.element.querySelector('#button-all_components');
+              title = elementRef.getAttribute('title');
+              url = self.entryPointSite;
               renderAllComponents();
               break;
-            case 'publishcomponent':
-              changeSelectedMenuEntry( self.element.querySelector('#button-publish') );
-              renderPublishComponent();
+            case 'publishComponent':
+              elementRef = self.element.querySelector('#button-publish');
+              title = elementRef.getAttribute('title');
+              url = self.entryPointSite + state.path;
+              await renderPublishComponent();
+              break;
+            case 'userLoginComponent':
+              elementRef = self.element.querySelector('#user');
+              title = elementRef.getAttribute('title');
+              url = self.entryPointSite + state.path;
+
+              let shadowDms = document.querySelector('#' + self.index).shadowRoot;
+              const shadowUser = shadowDms.querySelector('#' + self.user.index).shadowRoot;
+              const button = shadowUser.querySelector('#button');
+
+              if (button) {
+                button.click();
+              }
+              await renderUserLoginComponent();
               break;
             default:
-              console.log(`Unknown navigation target: ${target}`);
+              let validateObject = {};
+
+              if (state.isDetail) {
+                if (state.tab) {
+                  let route = false;
+                  self.routes.forEach(function(element) {
+                    if (state.tab === element.path) {
+                      if (element.defaultTab) {
+                        state.defaultTab = element.defaultTab;
+                      }
+                      route = element;
+                    }
+                  });
+
+                  if (route) {
+                    validateObject = await buildDetailViewWithTabsAndRender({}, state, false, route);
+                  } else {
+                    validateObject.hit = true;
+                  }
+                } else {
+                  validateObject = await buildDetailViewWithTabsAndRender({}, state, false);
+                }
+
+                if (validateObject.hit) {
+                  renderNotFoundComponent();
+                }
+              } else {
+                renderNotFoundComponent();
+              }
+
+              title = validateObject.title ? validateObject.title : '404 Not Found';
+              url = validateObject.url ? validateObject.url : window.location.pathname;
+
+              break;
           }
+
+          document.title = title;
+          if (!onpopstate) {
+            window.history.pushState(state, title, url);
+          }
+          changeSelectedMenuEntry(elementRef);
         }
 
         /** renders browse apps */
-        function renderBrowseApps() {
+        function renderBrowseAppsComponent() {
           // view browse apps already active? => abort
           if ( content_elem.querySelector( '#browse_apps' ) ) return;
 
@@ -643,36 +801,14 @@
           const browse_apps_elem = content_elem.querySelector( '#browse_apps' );
           if (!resource_finder_started) {
             self.resource_finder.start({})
-              .then(instance => {
-                self.resource_finder = instance;
-                resource_finder_started = true;
-                $.setContent( browse_apps_elem, self.resource_finder.root );
-              });
+                .then(instance => {
+                  self.resource_finder = instance;
+                  resource_finder_started = true;
+                  $.setContent( browse_apps_elem, self.resource_finder.root );
+                });
           }
           else
             $.setContent( browse_apps_elem, self.resource_finder.root );
-
-        }
-
-        /** renders publish app */
-        function renderPublishApp() {
-          // view browse apps already active? => abort
-          if ( content_elem.querySelector( '#publish_app' ) ) return;
-
-          // clear content area
-          $.setContent( content_elem, $.html( { id: 'publish_app' } ) );
-
-          const publish_app_elem = content_elem.querySelector( '#publish_app' );
-          if (!resource_publish_started) {
-            self.resource_publish.start({})
-              .then(instance => {
-                self.resource_publish = instance;
-                resource_publish_started = true;
-                $.setContent( publish_app_elem, self.resource_publish.root );
-              });
-          }
-          else
-            $.setContent( publish_app_elem, self.resource_publish.root );
 
         }
 
@@ -699,7 +835,7 @@
               if ( developer_x > developer_y ) return 1;
               return 0;
             },
-            onrender: ( element, data ) => {
+            onrender: ( element, data) => {
               if ( !self.rating ) return;
               self.rating.start( {
                 root: element.querySelector( '.rating' ),
@@ -708,16 +844,31 @@
             },
             onclick: async ( event, element, data ) => {
               changeSelectedMenuEntry();
-              window.location.hash = '';
-              const instance = await self.component_manager.start( {
-                data: {
-                  store: self.data.store,
-                  key: data.key
-                }
-              } );
-              $.setContent( content_elem, instance.root )
+              await buildDetailViewWithTabsAndRender(data);
             }
           } );
+
+        }
+
+        /** renders publish app */
+        function renderPublishAppComponent() {
+          // view browse apps already active? => abort
+          if ( content_elem.querySelector( '#publish_app' ) ) return;
+
+          // clear content area
+          $.setContent( content_elem, $.html( { id: 'publish_app' } ) );
+
+          const publish_app_elem = content_elem.querySelector( '#publish_app' );
+          if (!resource_publish_started) {
+            self.resource_publish.start({})
+                .then(instance => {
+                  self.resource_publish = instance;
+                  resource_publish_started = true;
+                  $.setContent( publish_app_elem, self.resource_publish.root );
+                });
+          }
+          else
+            $.setContent( publish_app_elem, self.resource_publish.root );
 
         }
 
@@ -782,6 +933,193 @@
 
         }
 
+        /** renders user login component view */
+        async function renderUserLoginComponent() {
+          let shadowDms = document.querySelector('#' + self.index).shadowRoot;
+          const shadowUser = shadowDms.querySelector('#' + self.user.index).shadowRoot;
+          const loginform = shadowUser.querySelector('#loginform');
+
+          if (loginform) {
+            loginform.addEventListener('submit', () => {
+              //document.querySelector('#button-all_components').click();
+              state = getStateFromUrl(self.entryPointSite.toString());
+              navigateTo(state);
+            });
+            loginform.querySelector('#btn-abort').addEventListener('click', () => {
+              //document.querySelector('#button-all_components').click();
+              state = getStateFromUrl(self.entryPointSite.toString());
+              navigateTo(state);
+            });
+          }
+        }
+
+        /**
+         * add functions and routing to detailView/Tabs
+         * @param {object} [data]
+         * @param {object} [state]
+         * @param {boolean} [spaEntry]
+         * @param {object} [route]
+         */
+        async function buildDetailViewWithTabsAndRender( data , state = {}, spaEntry = true, route) {
+          //if(data.routing && self.entryPointDetail) {
+          let title, url, key = data.key, hit = true, divEntries = false,
+              disabledTab = true,
+              instance = {},
+              error = false,
+              escapedDataKey,
+              check = true,
+              newKey,
+              convertPatternUnderlined = new RegExp('[_ ]+'),
+              convertPatternHyphen = new RegExp('[- ]+');
+
+          if (!key) {
+            key = state.component;
+          }
+
+          if (key.search('_') !== -1) {
+            check = false;
+            if (!spaEntry) {
+              key = key.replace(convertPatternUnderlined, "-");
+              newKey = key;
+            }
+
+          }
+
+          await self.component_manager.start( {
+            data: {
+              store: self.data.store,
+              key: key
+            }
+          }).then((output) => {
+            instance = output;
+          })
+              .catch(async () => {
+                if (check) {
+                  newKey = key.replace(convertPatternHyphen, "_");
+                  state.component = state.component.replace(convertPatternHyphen, "_");
+                }
+
+                await self.component_manager.start({
+                  data: {
+                    store: self.data.store,
+                    key: newKey
+                  }
+                }).then((output) => {
+                  instance = output;
+                })
+                    .catch((err) => {
+                      error = err;
+                    });
+              });
+
+          if (self.entryPointDetail && spaEntry) {
+            escapedDataKey = data.key.replace(convertPatternUnderlined, "-");
+            state = {path: self.entryPointDetail + escapedDataKey, component: data.key, isDetail: true};
+            title = data.title + ' Component';
+            url = self.entryPointSite + self.entryPointDetail + escapedDataKey;
+            hit = false;
+
+            document.title = title;
+            window.history.pushState(state, title, url);
+
+            $.setContent(content_elem, instance.root);
+          } else {
+            if (!error) {
+              const components = await instance.data.store.get();
+              components.forEach(function (component) {
+                if (component.key === state.component) {
+                  hit = false;
+                  state.title = component.title;
+                  $.setContent(content_elem, instance.root);
+                }
+              });
+            }
+          }
+
+          if (!hit) {
+            let shadowDms = document.querySelector('#' + self.index).shadowRoot;
+            const shadowComponentManager = shadowDms.querySelector('div[id^="' + self.component_manager.index + '"]').shadowRoot;
+            const shadowMenu = shadowComponentManager.querySelector('div[id^="' + instance.menu.component.index + '"]').shadowRoot;
+            divEntries = shadowMenu.querySelectorAll('div.entry');
+          }
+
+          if (route && !error) {
+            if (!divEntries[route.menuEntry].classList.contains('disabled')) {
+              divEntries[route.menuEntry].click();
+              hit = false;
+            } else {
+              disabledTab = false;
+              hit = true;
+            }
+          }
+
+          if (state.tab && disabledTab) {
+            title = capitalize(state.title) + ' Component: ' + capitalize(state.tab);
+            url = self.entryPointSite + state.path;
+          } else if (!hit) {
+            title = capitalize(state.title) + ' Component';
+            url = self.entryPointSite + state.path;
+          }
+
+          if (divEntries) {
+            for (let i = 0; i < divEntries.length; i++) {
+              if(!divEntries[i].classList.contains('disabled')) {
+                divEntries[i].addEventListener('click', () => {
+                  let unformattedSlug = divEntries[i].querySelector('.title').textContent;
+                  let slug = unformattedSlug.trim().toLowerCase().replace(' ','');
+                  escapedDataKey = state.component.replace(convertPatternUnderlined, "-");
+
+                  if (state.defaultTab) {
+                    state = { path: self.entryPointDetail + escapedDataKey, component: escapedDataKey, isDetail: true, tab: slug };
+                  } else {
+                    state = { path: self.entryPointDetail + escapedDataKey + '/' + slug, component: escapedDataKey, isDetail: true, tab: slug };
+                  }
+
+                  navigateTo(state);
+                });
+              }
+            }
+          }
+
+          return { hit: hit, title: title, url: url};
+        }
+
+        function renderNotFoundComponent() {
+          /*const shadow = document.createElement( 'div' );
+          shadow.attachShadow( { mode: 'open' } );
+
+          ccm.load(
+              {
+            url: '//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css',
+            context: shadow
+          },
+          {
+            url: '//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js',
+            context: shadow
+          },
+          {
+            url: '//code.jquery.com/jquery-1.11.1.min.js',
+            context: shadow
+          }
+          );*/
+
+          $.setContent( content_elem, '<div class="container">\n' +
+              '    <div class="row">\n' +
+              '        <div class="col-md-12">\n' +
+              '            <div style="padding: 40px 15px;text-align: center;" class="error-template">\n' +
+              '                <h1>Oops!</h1>\n' +
+              '                <h2>404 Not Found</h2>\n' +
+              '                <div class="error-details">Sorry, an error has occured, Requested page not found!</div>\n' +
+              '                <div style="margin-top:15px;margin-bottom:15px;" class="error-actions">' +
+              '                   <a href="' + self.entryPointSite + '" style="margin-right:10px; padding: 10px 16px; font-size: 18px; line-height: 1.33; border-radius: 6px;" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span>Take Me Home</a>\n' +
+              '                   <a href="' + self.entryPointSite + '" style="margin-right:10px; padding: 10px 16px; font-size: 18px; line-height: 1.33; border-radius: 6px;" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-envelope"></span>Contact Support</a>\n' +
+              '                </div>' +
+              '            </div>\n' +
+              '        </div>\n' +
+              '    </div>\n' +
+              '</div>');
+        }
+
         /**
          * changes the selected header menu entry
          * @param {Element} [item] - clicked header button
@@ -790,11 +1128,14 @@
           [ ...self.element.querySelectorAll( '#header .button' ) ].map( div => { div.classList.remove( 'active' ); } );
           item && item.classList.add( 'active' );
         }
-
       };
+
     }
 
+
   };
+
+
 
   let b="ccm."+component.name+(component.version?"-"+component.version.join("."):"")+".js";if(window.ccm&&null===window.ccm.files[b])return window.ccm.files[b]=component;(b=window.ccm&&window.ccm.components[component.name])&&b.ccm&&(component.ccm=b.ccm);"string"===typeof component.ccm&&(component.ccm={url:component.ccm});let c=(component.ccm.url.match(/(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)/)||["latest"])[0];if(window.ccm&&window.ccm[c])window.ccm[c].component(component);else{var a=document.createElement("script");document.head.appendChild(a);component.ccm.integrity&&a.setAttribute("integrity",component.ccm.integrity);component.ccm.crossorigin&&a.setAttribute("crossorigin",component.ccm.crossorigin);a.onload=function(){window.ccm[c].component(component);document.head.removeChild(a)};a.src=component.ccm.url}
 } )();
