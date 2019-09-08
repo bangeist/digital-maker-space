@@ -1,48 +1,11 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ccm Components by André Kless</title>
-<h2><i>ccm</i> Components developed by André Kless</h2>
-<table border="1"><tr><th>Component</th><th>Description</th><th>Demo</th></tr></table>
-<script>
-  add( 'app_builder', '<i>ccm</i> component for building apps' );
-  add( 'app_manager', '<i>ccm</i> component for managing an app' );
-  add( 'blank', 'blank template for a <i>ccm</i> component' );
-  add( 'blank_blank', 'example <i>ccm</i> component for the reuse of two <i>ccm</i> instances' );
-  add( 'cloze', '<i>ccm</i> component for rendering a fill-in-the-blank text' );
-  add( 'cloze_analytics', '<i>ccm</i> component for rendering fill-in-the-blank analytics' );
-  add( 'cloze_builder', '<i>ccm</i> component for building a fill-in-the-blank text' );
-  add( 'component_manager', '<i>ccm</i> component for component manager' );
-  add( 'content', '<i>ccm</i> component for rendering a predefined content' );
-  add( 'crud_app', '<i>ccm</i> component for Create/Read/Update/Delete a ccm-based app' );
-  add( 'dms', '<i>ccm</i> component for digital makerspace' );
-  add( 'eval', '<i>ccm</i> component for evaluating a given JavaScript expression' );
-  add( 'handover_app', '<i>ccm</i> component for handover of an app' );
-  add( 'highchart', '<i>ccm</i> component for rendering a "Highchart.js" chart' );
-  add( 'input', '<i>ccm</i> component for user input' );
-  add( 'json_builder', '<i>ccm</i> component for JSON builder' );
-  add( 'kanban_board', '<i>ccm</i> component for kanban board' );
-  add( 'kanban_card', '<i>ccm</i> component for kanban card' );
-  add( 'live_poll', '<i>ccm</i> component for live_poll' );
-  add( 'le', '<i>ccm</i> component for rendering a learning unit', true );
-  add( 'listing', '<i>ccm</i> component for a listing' );
-  add( 'log', '<i>ccm</i> component for data logging', true );
-  add( 'menu', '<i>ccm</i> component for rendering a menu' );
-  add( 'multi_blank', 'example component for reusing an undefined number of <i>ccm</i> instances of the same component' );
-  add( 'quick_decide', '<i>ccm</i> component for quick decision' );
-  add( 'quiz', '<i>ccm</i> component for rendering a quiz' );
-  add( 'result', '<i>ccm</i> component for visualisation of result data' );
-  add( 'show_points', '<i>ccm</i> component for rendering a point list of an user', true );
-  add( 'show_solutions', '<i>ccm</i> component for rendering a list of all submitted solutions', true );
-  add( 'submit', '<i>ccm</i> component for submitting data' );
-  add( 'teambuild', '<i>ccm</i> component for realtime team building' );
-  add( 'teambuild_builder', '<i>ccm</i> component for building a realtime team building' );
-  add( 'template', '<i>ccm</i> component template' );
-  add( 'testsuite', '<i>ccm</i> component for unit testing', true );
-  add( 'user', '<i>ccm</i> component for user authentication' );
-  add( 'window', '<i>ccm</i> component for flying windows' );
-  add( 'youtube', '<i>ccm</i> component for rendering a YouTube Player' );
-  function add( name, description, no_demo ) {
-    document.body.querySelector( 'table' ).innerHTML += '<tr><td>ccm.' + name + '.js</td><td>' + description + '</td><td>' + ( no_demo ? '-' : '<a href="' + name + '">Link</a>' ) + '</td></tr>';
-  }
-</script>
+<meta name="author" content="André Kless <andre.kless@web.de> 2018-2019">
+<meta name="license" content="The MIT License (MIT)">
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+<title>Digital Makerspace v1.0.7</title>
+
+<style>html, body, body * { margin: 0; height: 100%; }</style>
+<script src="https://domban.github.io/digital-maker-space/dms/versions/ccm.dms-1.0.7.js"></script>
+<ccm-dms-1-0-7 key='["ccm.get","https://ccmjs.github.io/akless-components/dms/v1.0.7/configs.js","live"]'></ccm-dms-1-0-7>
