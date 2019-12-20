@@ -16,7 +16,7 @@ ccm.files[ 'configs.js' ] = {
       "store": [ "ccm.store", { "name": "components", "url": "https://ccm2.inf.h-brs.de" } ],
       "key": {}
     },
-    "component_manager": [ "ccm.component", "https://ccmjs.github.io/akless-components/component_manager/versions/ccm.component_manager-2.2.6.js", {
+    "component_manager": [ "ccm.component", "https://domban.github.io/digital-maker-space/component_manager/versions/ccm.component_manager-2.2.6.js", {
       "rating.2.data.store.1": { "name": "component_ratings", "url": "https://ccm2.inf.h-brs.de" },
       "rating_result.2.data.store.1": { "name": "component_ratings", "url": "https://ccm2.inf.h-brs.de" },
       "commentary.2.data.store.1": { "name": "component_comments", "url": "https://ccm2.inf.h-brs.de" },
