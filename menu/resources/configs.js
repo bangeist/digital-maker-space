@@ -90,6 +90,7 @@ ccm.files[ 'configs.js' ] = {
         "class": "entry btn btn-default",
         "style": "z-index: unset",
         "onclick": "%click%",
+        "route": "%route%",
         "inner": {
           "class": "title"
         }

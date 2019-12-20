@@ -151,6 +151,7 @@
            */
           const entry_elem = $.html( self.html.entry, {
             id: entry_data.id,
+            route: entry_data.route,
             click: onClick
           } );
 

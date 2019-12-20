@@ -103,18 +103,20 @@
         "https://ccmjs.github.io/akless-components/dms/v1.0.7/component_manager.css"
       ],
       "menu": {
-        "component": [ "ccm.component", "https://ccmjs.github.io/akless-components/menu/versions/ccm.menu-2.4.4.js" ],
+        "component": [ "ccm.component", "https://domban.github.io/digital-maker-space/menu/versions/ccm.menu-2.4.4.js" ],
         "ignore": {
           "buttons": {
             "data": {
               "entries": [
                 {
                   "title": "Details",
-                  "content": { "id": "details" }
+                  "content": { "id": "details" },
+                  "route": "detail/%key%"
                 },
                 {
                   "title": "Description",
-                  "content": { "id": "description", "style": "padding: 1em" }
+                  "content": { "id": "description", "style": "padding: 1em" },
+                  "route": "detail/%key%/description"
                 },
                 {
                   "title": "Rating",
@@ -136,11 +138,13 @@
                       },
                       { "tag": "p" }
                     ]
-                  }
+                  },
+                  "route": "detail/%key%/rating"
                 },
                 {
                   "title": "Discussion",
-                  "content": { "id": "comment" }
+                  "content": { "id": "comment" },
+                  "route": "detail/%key%/discussion"
                 },
                 {
                   "title": "Demo",
@@ -150,7 +154,8 @@
                       { "id": "menu", "style": "margin-right: 1em;" },
                       { "id": "content", "style": "border: 3px double #ccc;" }
                     ]
-                  }
+                  },
+                  "route": "detail/%key%/demo"
                 },
                 {
                   "title": "Create App",
@@ -160,11 +165,12 @@
                       { "id": "menu", "style": "margin-right: 1em;" },
                       { "id": "content", "style": "border: 3px double #ccc;" }
                     ]
-                  }
+                  },
+                  "route": "detail/%key%/create-app"
                 }
               ]
             },
-            "key": [ "ccm.get", "https://ccmjs.github.io/akless-components/menu/resources/configs.js", "bootstrap" ],
+            "key": [ "ccm.get", "https://domban.github.io/digital-maker-space/menu/resources/configs.js", "bootstrap" ],
           },
           "list_group": {
             "html": {
